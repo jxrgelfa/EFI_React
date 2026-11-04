@@ -1,4 +1,6 @@
 import { BrowserRouter, Routes, Route, Link, Outlet } from "react-router-dom";
+import PedidosAdmin from "./pages/PedidosAdmin";
+import MarcasList from "./pages/MarcasList";
 
 // ─── Layout ───────────────────────────────────────────────────────────────────
 
@@ -75,13 +77,12 @@ function RootLayout() {
 }
 
 // ─── Placeholders para los compañeros ─────────────────────────────────────────
-// TODO: Reemplazar cada <h1> por el componente real cuando esté listo.
 
-const Home          = () => <h1 className="text-3xl font-bold">🏠 Home — Vista principal (pendiente)</h1>;
-const Catalogo      = () => <h1 className="text-3xl font-bold">👟 Catálogo de Productos (pendiente)</h1>;
+const Home            = () => <h1 className="text-3xl font-bold">🏠 Home — Vista principal (pendiente)</h1>;
+const Catalogo        = () => <h1 className="text-3xl font-bold">👟 Catálogo de Productos (pendiente)</h1>;
 const DetalleProducto = () => <h1 className="text-3xl font-bold">🔍 Detalle del Producto (pendiente)</h1>;
-const Favoritos     = () => <h1 className="text-3xl font-bold">❤️ Favoritos (pendiente)</h1>;
-const NotFound      = () => <h1 className="text-3xl font-bold text-red-500">404 — Página no encontrada</h1>;
+const Favoritos       = () => <h1 className="text-3xl font-bold">❤️ Favoritos (pendiente)</h1>;
+const NotFound        = () => <h1 className="text-3xl font-bold text-red-500">404 — Página no encontrada</h1>;
 
 // ─── Admin Layout (con Outlet para subrutas) ───────────────────────────────────
 
@@ -119,13 +120,10 @@ function AdminLayout() {
   );
 }
 
-// Placeholders para las subrutas de admin
-// TODO: Reemplazar por los componentes reales de administración.
-const AdminHome        = () => <h1 className="text-3xl font-bold">🛠️ Panel de Administración (pendiente)</h1>;
+// Placeholders restantes
+const AdminHome          = () => <h1 className="text-3xl font-bold">🛠️ Panel de Administración (pendiente)</h1>;
 const AdminNuevoProducto = () => <h1 className="text-3xl font-bold">➕ Nuevo Producto — Formulario (pendiente)</h1>;
-const AdminPedidos     = () => <h1 className="text-3xl font-bold">📦 Gestión de Pedidos (pendiente)</h1>;
-const AdminMarcas      = () => <h1 className="text-3xl font-bold">🏷️ Gestión de Marcas (pendiente)</h1>;
-const AdminUsuarios    = () => <h1 className="text-3xl font-bold">👤 Gestión de Usuarios (pendiente)</h1>;
+const AdminUsuarios      = () => <h1 className="text-3xl font-bold">👤 Gestión de Usuarios (pendiente)</h1>;
 
 // ─── Router principal ──────────────────────────────────────────────────────────
 
@@ -140,12 +138,12 @@ export default function App() {
           <Route path="producto/:id"     element={<DetalleProducto />} />
           <Route path="favoritos"        element={<Favoritos />} />
 
-          {/* Rutas de Admin con su propio layout anidado */}
+          {/* Rutas de Admin */}
           <Route path="admin" element={<AdminLayout />}>
             <Route index                 element={<AdminHome />} />
             <Route path="nuevo-producto" element={<AdminNuevoProducto />} />
-            <Route path="pedidos"        element={<AdminPedidos />} />
-            <Route path="marcas"         element={<AdminMarcas />} />
+            <Route path="pedidos"        element={<PedidosAdmin />} />
+            <Route path="marcas"         element={<MarcasList />} />
             <Route path="usuarios"       element={<AdminUsuarios />} />
           </Route>
 

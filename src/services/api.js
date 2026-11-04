@@ -64,7 +64,7 @@ async function request(endpoint, options = {}) {
 // ─── MARCAS ───────────────────────────────────────────────────────────────────
 
 /** Obtiene todas las marcas. */
-export const getMarcas = () => request("/marcas");
+export const getMarcas = () => request("/marcas/");
 
 /** Obtiene una marca por ID. */
 export const getMarcaById = (id) => request(`/marcas/${id}`);
@@ -135,7 +135,7 @@ export const deleteUsuario = (id) =>
 // ─── PEDIDOS ──────────────────────────────────────────────────────────────────
 
 /** Obtiene todos los pedidos. */
-export const getPedidos = () => request("/pedidos");
+export const getPedidos = () => request("/pedidos/");
 
 /** Obtiene un pedido por ID. */
 export const getPedidoById = (id) => request(`/pedidos/${id}`);
