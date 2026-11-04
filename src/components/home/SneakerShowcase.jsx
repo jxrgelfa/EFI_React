@@ -1,42 +1,57 @@
-import { useState } from "react";
+import { useState, useEffect, useContext } from "react";
 import { Link } from "react-router-dom";
+import { getProductos } from "../../services/api";
+import { FavoritesContext } from "../../context/FavoritesContext";
 import adidasImg from "../../assets/sneakers/ad-campus-negra.jpg";
 import nbImg from "../../assets/sneakers/new-balance-530-verdes.webp";
 import crocsImg from "../../assets/sneakers/CROCS-SNEAKERS.png";
 import vansImg from "../../assets/sneakers/vans-knu.jpg";
 
 /**
- * Listado de zapatillas destacadas estilo Footdistrict.
- * - Sin recuadros, marcos ni bordes contenedores.
- * - La imagen se integra directamente y de forma "smooth" con el fondo de la web.
- * - Precios expresados en Pesos Argentinos (ARS).
+ * Zapatillas de respaldo con fotos locales para garantizar que la interfaz
+ * nunca quede vacía si la base de datos aún no tiene ítems cargados.
  */
-const FEATURED_SNEAKERS = [
+const FALLBACK_SNEAKERS = [
   {
-    id: 1,
-    name: 'adidas Originals Campus 00s "Core Black"',
-    price: "$ 179.999",
-    image: adidasImg,
+    id: "f-1",
+    nombre: 'adidas Originals Campus 00s "Core Black"',
+    precio: 179999,
+    imagen_url: adidasImg,
   },
   {
-    id: 2,
-    name: 'New Balance 530 "White / Olive Green"',
-    price: "$ 195.000",
-    image: nbImg,
+    id: "f-2",
+    nombre: 'New Balance 530 "White / Olive Green"',
+    precio: 195000,
+    imagen_url: nbImg,
   },
   {
-    id: 3,
-    name: 'Crocs Echo Surge "Atmosphere Grey"',
-    price: "$ 135.000",
-    image: crocsImg,
+    id: "f-3",
+    nombre: 'Crocs Echo Surge "Atmosphere Grey"',
+    precio: 135000,
+    imagen_url: crocsImg,
   },
   {
-    id: 4,
-    name: 'Vans Knu Skool "Black / White"',
-    price: "$ 149.999",
-    image: vansImg,
+    id: "f-4",
+    nombre: 'Vans Knu Skool "Black / White"',
+    precio: 149999,
+    imagen_url: vansImg,
   },
 ];
+
+/**
+ * Formateador de moneda a Pesos Argentinos (ARS).
+ */
+function formatCurrency(value) {
+  if (typeof value === "number") {
+    return `$ ${value.toLocaleString("es-AR")}`;
+  }
+  if (typeof value === "string") {
+    if (value.startsWith("$")) return value;
+    const num = parseFloat(value);
+    return isNaN(num) ? value : `$ ${num.toLocaleString("es-AR")}`;
+  }
+  return "-";
+}
 
 function HeartButton({ isLiked, onToggle }) {
   return (
@@ -69,16 +84,24 @@ function HeartButton({ isLiked, onToggle }) {
 }
 
 export default function SneakerShowcase() {
-  const [favorites, setFavorites] = useState({});
+  const [productos, setProductos] = useState([]);
+  const { isFavorite, toggleFavorite } = useContext(FavoritesContext);
 
-  const toggleFavorite = (e, id) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setFavorites((prev) => ({
-      ...prev,
-      [id]: !prev[id],
-    }));
-  };
+  useEffect(() => {
+    getProductos()
+      .then((data) => {
+        // Maneja tanto un array directo como un objeto paginado { items: [...] }
+        const lista = Array.isArray(data) ? data : data?.items || [];
+        setProductos(lista);
+      })
+      .catch((err) => {
+        console.warn("No se pudo conectar a la API de productos:", err.message);
+      });
+  }, []);
+
+  // Si la API trae productos, toma los primeros 4. Si la base de datos está vacía, usa los de respaldo.
+  const sneakersToDisplay =
+    productos.length > 0 ? productos.slice(0, 4) : FALLBACK_SNEAKERS;
 
   return (
     <section className="w-full pt-10 pb-16">
@@ -101,32 +124,38 @@ export default function SneakerShowcase() {
           </div>
         </div>
 
-        {/* Grilla de productos: sin recuadros ni marcos contenedores */}
+        {/* Grilla de productos: sin recuadros, marcos ni bordes contenedores */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
-          {FEATURED_SNEAKERS.map((sneaker) => {
-            const isLiked = Boolean(favorites[sneaker.id]);
+          {sneakersToDisplay.map((sneaker) => {
+            const isLiked = isFavorite(sneaker.id);
+            const imageSrc = sneaker.imagen_url || sneaker.image || adidasImg;
+            const title = sneaker.nombre || sneaker.name || "Zapatilla";
+            const price = formatCurrency(sneaker.precio ?? sneaker.price);
 
             return (
-              <div key={sneaker.id} className="group flex flex-col">
+              <div key={sneaker.id} className="group flex flex-col relative">
+                {/* Botón flotante de favoritos */}
+                <div className="absolute top-2 right-2 z-20">
+                  <HeartButton
+                    isLiked={isLiked}
+                    onToggle={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      toggleFavorite(sneaker);
+                    }}
+                  />
+                </div>
+
                 <Link
-                  to="/productos"
+                  to={sneaker.id?.toString().startsWith("f-") ? "/productos" : `/producto/${sneaker.id}`}
                   className="flex flex-col flex-1 focus:outline-none"
-                  aria-label={`Ver ${sneaker.name}`}
+                  aria-label={`Ver ${title}`}
                 >
                   {/* Espacio de la foto sin recuadro ni borde alguno */}
                   <div className="relative aspect-square w-full flex items-center justify-center overflow-hidden">
-                    {/* Botón flotante de favoritos */}
-                    <div className="absolute top-2 right-2 z-10">
-                      <HeartButton
-                        isLiked={isLiked}
-                        onToggle={(e) => toggleFavorite(e, sneaker.id)}
-                      />
-                    </div>
-
-                    {/* Imagen directa en la web de forma fluida */}
                     <img
-                      src={sneaker.image}
-                      alt={sneaker.name}
+                      src={imageSrc}
+                      alt={title}
                       className="w-full h-full object-contain transition-transform duration-500 ease-out group-hover:scale-105 select-none"
                       loading="lazy"
                     />
@@ -135,10 +164,10 @@ export default function SneakerShowcase() {
                   {/* Título y Precio en Pesos Argentinos (ARS) */}
                   <div className="mt-3 flex flex-col">
                     <h3 className="text-xs sm:text-sm font-normal text-neutral-900 dark:text-neutral-100 leading-snug line-clamp-2">
-                      {sneaker.name}
+                      {title}
                     </h3>
                     <p className="text-xs sm:text-sm font-semibold text-neutral-900 dark:text-white mt-1 tracking-tight">
-                      {sneaker.price}
+                      {price}
                     </p>
                   </div>
                 </Link>

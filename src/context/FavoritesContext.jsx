@@ -1,62 +1,57 @@
-import React, { createContext, useState, useEffect } from "react"
+import React, { createContext, useState } from "react";
 
-function loadFavorites() {
-    try {
-        const saved = localStorage.getItem("favorites")
-        return saved ? JSON.parse(saved) : []
-    } catch {
-        return []
-    }
-}
-
-export const FavoritesContext = createContext()
+export const FavoritesContext = createContext();
 
 export function FavoritesProvider({ children }) {
-    const [favorites, setFavorites] = useState(loadFavorites)
+  const [favorites, setFavorites] = useState([]);
 
-    useEffect(() => {
-        try {
-            localStorage.setItem("favorites", JSON.stringify(favorites))
-        } catch {
-            //storage lleno
-        }
-    }, [favorites])
+  // Comprueba si un producto ya está guardado en favoritos
+  const isFavorite = (id) => {
+    return favorites.some((item) => String(item.id) === String(id));
+  };
 
-    const addToFavorites = (product) => {
-        setFavorites((prev) => {
-            const existing = prev.find((item) => item.id === product.id)
-            if (existing) {
-                return prev.map((item) =>
-                    item.id === product.id
-                        ? { ...item, quantity: item.quantity + 1 }
-                        : item
-                )
-            }
+  // Agrega o quita el producto de favoritos (Toggle)
+  const toggleFavorite = (product) => {
+    if (!product) return;
 
-            const { id, title, price, thumbnail } = product
-            return [...prev, { id, title, price, thumbnail, quantity: 1 }]
-        })
-    }
+    setFavorites((prev) => {
+      const exists = prev.some((item) => String(item.id) === String(product.id));
+      if (exists) {
+        return prev.filter((item) => String(item.id) !== String(product.id));
+      }
+      return [
+        ...prev,
+        {
+          id: product.id,
+          nombre: product.nombre || product.name || "Zapatilla",
+          precio: Number(product.precio ?? 0),
+          imagen_url: product.imagen_url || "",
+        },
+      ];
+    });
+  };
 
-    const removeFromFavorites = (id) => {
-        setFavorites((prev) => prev.filter((item) => item.id !== id))
-    }
+  // Quita un producto puntual de favoritos
+  const removeFromFavorites = (id) => {
+    setFavorites((prev) => prev.filter((item) => String(item.id) !== String(id)));
+  };
 
-    const clearFavorites = () => setFavorites([])
+  // Vacía toda la lista de favoritos
+  const clearFavorites = () => {
+    setFavorites([]);
+  };
 
-    const updateQuantity = (id, quantity) => {
-        if (quantity<1) removeFromFavorites (id)
-        setFavorites((prev) =>
-            personalbar.map((item) => (item.id === id ? {...item, quantity}:item)
-    ))
-    }
-
-    const totalItems = favorites.reduce((sum, item) => sum + item.quantity, 0)
-    const totalPrice = favorites.reduce((sum, item) => sum + item.price * item.quantity, 0)
-
-    return (
-        <FavoritesContext.Provider value={{ favorites, addToFavorites, updateQuantity, clearFavorites, removeFromFavorites, totalItems, totalPrice }}>
-            {children}
-        </FavoritesContext.Provider>
-    )
+  return (
+    <FavoritesContext.Provider
+      value={{
+        favorites,
+        isFavorite,
+        toggleFavorite,
+        removeFromFavorites,
+        clearFavorites,
+      }}
+    >
+      {children}
+    </FavoritesContext.Provider>
+  );
 }

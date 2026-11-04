@@ -10,7 +10,8 @@ export default function PedidosAdmin() {
   useEffect(() => {
     getPedidos()
       .then((pedidos) => {
-        setData(pedidos);
+        const listaPedidos = Array.isArray(pedidos) ? pedidos : (pedidos?.items ?? []);
+        setData(listaPedidos);
         setLoading(false);
       })
       .catch((err) => {

@@ -9,7 +9,8 @@ export default function MarcasList() {
   useEffect(() => {
     getMarcas()
       .then((marcas) => {
-        setData(marcas || []);
+        const listaMarcas = Array.isArray(marcas) ? marcas : (marcas?.items ?? []);
+        setData(listaMarcas);
         setLoading(false);
       })
       .catch((err) => {

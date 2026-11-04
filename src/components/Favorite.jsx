@@ -1,90 +1,103 @@
-import { useContext } from "react"
-import { Link } from "react-router-dom"
-import { FavoritesContext } from "../context/FavoritesContext"
+import { useContext } from "react";
+import { Link } from "react-router-dom";
+import { FavoritesContext } from "../context/FavoritesContext";
 
 export default function Favorites() {
-  const {favorites,removeFromFavorites,updateQuantity,clearFavorites,totalPrice,} = 
-    useContext(FavoritesContext)
+  const { favorites, removeFromFavorites, clearFavorites } = useContext(FavoritesContext);
 
   if (favorites.length === 0) {
     return (
-      <div className="max-w-3xl mx-auto pt-6 px-4 w-full">
-        <h1 className="text-3xl font-bold">Tu lista de favoritos está vacía</h1>
+      <div className="max-w-3xl mx-auto pt-12 px-4 w-full text-center">
+        <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-3xl">
+          ❤️
+        </div>
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
+          Tu lista de favoritos está vacía
+        </h1>
+        <p className="text-gray-500 dark:text-gray-400 mt-2 mb-6">
+          Explora nuestro catálogo y guarda tus zapatillas preferidas para verlas aquí.
+        </p>
         <Link
-          to="/products" className="text-sm text-rose-400 hover:underline mt-2 inline-block">
-             Ver productos
+          to="/productos"
+          className="inline-block px-6 py-2.5 bg-black text-white dark:bg-white dark:text-black font-semibold rounded-lg hover:opacity-85 transition-opacity"
+        >
+          Explorar catálogo
         </Link>
       </div>
-    )
+    );
   }
-  //Favoritos
+
   return (
-    <div className="max-w-3xl mx-auto pt-6 px-4 w-full">
-      <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold">Favoritos</h1>
+    <div className="max-w-4xl mx-auto pt-6 px-4 w-full">
+      <div className="flex items-center justify-between pb-4 border-b border-gray-200 dark:border-zinc-800">
+        <div>
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
+            Mis Favoritos
+          </h1>
+          <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-1">
+            {favorites.length} {favorites.length === 1 ? "artículo guardado" : "artículos guardados"}
+          </p>
+        </div>
         <button
+          type="button"
           onClick={clearFavorites}
-          className="text-sm text-gray-800 hover:text-red-400 cursor-pointer"
+          className="text-xs sm:text-sm font-medium text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 transition-colors cursor-pointer"
         >
-          Vaciar favoritos
+          Vaciar lista
         </button>
       </div>
-{/*Detalles del producto*/}
-      <ul className="mt-4 flex flex-col gap-3">
-        {favorites.map((item) => (
-          <li key={item.id} className="flex items-center gap-4 bg-zinc-800 p-4 rounded-lg">
-            <img
-              src={item.thumbnail}
-              alt={item.title}
-              className="w-20 h-20 object-cover rounded bg-zinc-900"
-            />
 
-            <div className="flex-1">
-              <Link to={`/products/${item.id}`} className="font-semibold hover:underline">
-                {item.title}
+      {/* Lista de zapatillas favoritas */}
+      <ul className="mt-6 flex flex-col gap-4">
+        {favorites.map((item) => (
+          <li
+            key={item.id}
+            className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-xl bg-white dark:bg-zinc-900 border border-gray-100 dark:border-zinc-800 shadow-xs"
+          >
+            <div className="flex items-center gap-4">
+              <div className="w-20 h-20 rounded-lg bg-zinc-50 dark:bg-zinc-800 p-2 flex items-center justify-center shrink-0">
+                {item.imagen_url ? (
+                  <img
+                    src={item.imagen_url}
+                    alt={item.nombre}
+                    className="w-full h-full object-contain"
+                  />
+                ) : (
+                  <span className="text-xs text-gray-400">Sin foto</span>
+                )}
+              </div>
+
+              <div>
+                <Link
+                  to={`/producto/${item.id}`}
+                  className="text-base font-semibold text-gray-900 dark:text-white hover:underline line-clamp-1"
+                >
+                  {item.nombre}
+                </Link>
+                <p className="text-sm font-bold text-emerald-600 dark:text-emerald-400 mt-0.5">
+                  ${Number(item.precio || 0).toLocaleString("es-AR")}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <Link
+                to={`/producto/${item.id}`}
+                className="px-3 py-1.5 text-xs font-semibold rounded-lg bg-zinc-100 dark:bg-zinc-800 text-gray-800 dark:text-zinc-200 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors"
+              >
+                Ver detalle
               </Link>
-              <p className="text-rose-400 font-semibold">${item.price}</p>
-            </div>
-            {/*Modifica cantidad -RESTA*/}
-            <div className="flex items-center gap-2">
               <button
-                onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                aria-label="Quitar una unidad"
-                className="w-8 h-8 rounded bg-zinc-700 hover:bg-zinc-600 cursor-pointer"
+                type="button"
+                onClick={() => removeFromFavorites(item.id)}
+                className="px-3 py-1.5 text-xs font-semibold rounded-lg text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 border border-rose-200 dark:border-rose-900 transition-colors cursor-pointer"
               >
-                −
-              </button>
-              {/*Modifica cantidad +SUMA*/}
-              <span className="w-6 text-center">{item.quantity}</span>
-              <button
-                onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                aria-label="Agregar una unidad"
-                className="w-8 h-8 rounded bg-zinc-700 hover:bg-zinc-600 cursor-pointer"
-              >
-                +
+                Quitar
               </button>
             </div>
-            {/*Muestra el subtotal*/}
-            <p className="w-24 text-right font-semibold">
-              ${(item.price * item.quantity).toFixed(2)}
-            </p>
-            {/*Elimina un producto de la lista de favoritos*/}
-            <button
-              onClick={() => removeFromFavorites(item.id)}
-              aria-label={`Eliminar ${item.title}`}
-              className="text-rose-400 hover:text-red-400 cursor-pointer"
-            >
-              ✕
-            </button>
           </li>
         ))}
       </ul>
-        {/*Muestra Precio total*/}
-      <div className="flex items-center justify-between mt-6 bg-zinc-800 p-4 rounded-lg">
-        <span className="text-lg">Total</span>
-        <span className="text-2xl font-bold text-rose-400"> ${totalPrice.toFixed(2)}
-        </span>
-      </div>
     </div>
-  )
+  );
 }

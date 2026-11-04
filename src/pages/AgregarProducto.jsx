@@ -1,198 +1,268 @@
-import React, { useState, useEffect } from 'react'
-import { useContext } from 'react'
-import { UserContext } from '../context/UserContext'
-
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000/api";
+import React, { useState, useEffect } from "react";
+import { getMarcas, createProducto } from "../services/api";
 
 export default function AgregarProducto() {
+  const [form, setForm] = useState({
+    nombre: "",
+    precio: "",
+    talle: "",
+    stock: "",
+    marca_id: "",
+    imagen_url: "",
+  });
 
-    const userContext = useContext(UserContext);
-    const user = userContext?.user || { admin: true };
-    const [form, setForm] = useState({
+  const [marcas, setMarcas] = useState([]);
+  const [errors, setErrors] = useState({});
+  const [loading, setLoading] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
+
+  // Cargar lista de marcas para el select desplegable
+  useEffect(() => {
+    getMarcas()
+      .then((data) => {
+        const items = Array.isArray(data) ? data : data?.items || [];
+        setMarcas(items);
+      })
+      .catch((err) => {
+        console.error("Error al cargar marcas:", err.message);
+      });
+  }, []);
+
+  // Actualiza los campos del formulario
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setForm((prev) => ({ ...prev, [name]: value }));
+  };
+
+  // Validaciones del formulario
+  const validate = () => {
+    const newErrors = {};
+
+    if (!form.nombre.trim()) {
+      newErrors.nombre = "El título es obligatorio";
+    }
+
+    if (!form.precio) {
+      newErrors.precio = "El precio es obligatorio";
+    } else if (Number(form.precio) <= 0) {
+      newErrors.precio = "El precio debe ser mayor a 0";
+    }
+
+    if (!form.talle) {
+      newErrors.talle = "El talle es obligatorio";
+    } else if (Number(form.talle) <= 0) {
+      newErrors.talle = "El talle debe ser mayor a 0";
+    }
+
+    if (!form.stock && form.stock !== 0) {
+      newErrors.stock = "El stock es obligatorio";
+    } else if (Number(form.stock) < 0) {
+      newErrors.stock = "El stock no puede ser negativo";
+    }
+
+    if (!form.marca_id) {
+      newErrors.marca_id = "Debes seleccionar una marca";
+    }
+
+    return newErrors;
+  };
+
+  // Envío del formulario al backend (POST)
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setSuccessMessage("");
+    setErrors({});
+
+    const newErrors = validate();
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const nuevoProducto = {
+        nombre: form.nombre.trim(),
+        precio: Number(form.precio),
+        talle: Number(form.talle),
+        stock: Number(form.stock),
+        marca_id: Number(form.marca_id),
+        imagen_url: form.imagen_url.trim() || null,
+        activo: true,
+      };
+
+      await createProducto(nuevoProducto);
+
+      setSuccessMessage("¡Producto agregado con éxito a la base de datos!");
+      setForm({
         nombre: "",
         precio: "",
+        talle: "",
         stock: "",
-        marca_id: "", //Foreign key de marca
-    })
-    const [marcas, setMarcas] = useState([])//Guarda la lista de marcas de la API
-    const [errors, setErrors] = useState({})//guarda los mensajes cuando el usuario deja titulo vacio, precio en 0, etc
-    const [loading, setLoading] = useState(false)//Deshabilita el boton de "Guardar" una vez presionado para que no cargue mas de una vez el producto
-    const [successMessage, setSuccessMessage] = useState("") //Guarda mensaje de confirmacion
-
-    // Trae la lista de marcas desde el backend
-    useEffect(() => {
-        const getMarcas = async () => {
-            try {
-                const res = await fetch(`${API_URL}/marcas/`)
-                const data = await res.json()
-                setMarcas(data)
-            } catch (err) {
-                console.error("Error al traer marcas: " + err)
-            }
-        }
-        getMarcas()
-    }, [API_URL])
-
-    //Si no es administrador no lo deja tener acceso
-    if (!user.admin) {
-        return (
-            <section className='flex-1 flex justify-center items-center'>
-                <p className='text-red-600 text-4xl font-bold'>
-                    No tienes acceso a este formulario.
-                </p>
-            </section>
-        )
+        marca_id: "",
+        imagen_url: "",
+      });
+    } catch (err) {
+      setErrors({ general: err.message || "Error al conectar con la API" });
+    } finally {
+      setLoading(false);
     }
-    //actualiza el formulario cada vez que se realiza un cambio
-    const handleChange = (e) => {
-        const { name, value } = e.target
-        setForm((prev) => ({ ...prev, [name]: value }))
-    }
-    //Valida que los campos se llenen de la forma correcta
-    const validate = () => {
-        const newErrors = {}
+  };
 
-        if (!form.nombre.trim()) newErrors.nombre = "El titulo es obligatorio"
+  return (
+    <section className="max-w-xl mx-auto py-6 px-4">
+      <div className="mb-6">
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+          Agregar Nuevo Producto
+        </h1>
+        <p className="text-sm text-gray-500 dark:text-gray-400">
+          Completa el formulario para registrar una nueva zapatilla en el catálogo.
+        </p>
+      </div>
 
-        if (!form.precio) {
-            newErrors.precio = "El precio es obligatorio"
-        } else if (Number(form.precio) <= 0) {
-            newErrors.precio = "El precio debe ser mayor a 0"
-        }
+      {successMessage && (
+        <div className="mb-4 p-3 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-300 dark:border-emerald-800 text-emerald-800 dark:text-emerald-200 rounded-lg text-sm text-center">
+          {successMessage}
+        </div>
+      )}
 
-        if (!form.stock && form.stock !== 0) {newErrors.stock = "El stock es obligatorio"
-        } else if (Number(form.stock) < 0) {
-            newErrors.stock = 'El stock no puede ser negativo'
-        }
+      {errors.general && (
+        <div className="mb-4 p-3 bg-rose-50 dark:bg-rose-950/40 border border-rose-300 dark:border-rose-800 text-rose-800 dark:text-rose-200 rounded-lg text-sm text-center">
+          {errors.general}
+        </div>
+      )}
 
-        if (!form.marca_id) newErrors.marca_id = "La marca es obligatoria"
+      <form
+        onSubmit={handleSubmit}
+        className="bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 p-6 rounded-xl shadow-xs space-y-4"
+      >
+        {/* Título / Nombre */}
+        <div>
+          <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">
+            Nombre del modelo *
+          </label>
+          <input
+            type="text"
+            name="nombre"
+            value={form.nombre}
+            onChange={handleChange}
+            placeholder="Ej: Nike Air Max 90"
+            className="w-full px-3 py-2 rounded-lg bg-gray-50 dark:bg-zinc-800 border border-gray-300 dark:border-zinc-700 text-gray-900 dark:text-white text-sm focus:outline-none focus:border-black dark:focus:border-white"
+          />
+          {errors.nombre && (
+            <p className="text-xs text-rose-600 dark:text-rose-400 mt-1">{errors.nombre}</p>
+          )}
+        </div>
 
-        return newErrors
-    }
-    //Envia los datos del formulario al backend
-    const handleSubmit = async (e) => {
-        e.preventDefault()
-        setSuccessMessage("")
-        const newErrors = validate()
-
-        if (Object.keys(newErrors).length > 0) {
-            setErrors(newErrors)
-            return
-        }
-
-        setLoading(true)
-        //Le envia la API los datos para el POST
-        try {
-            const res = await fetch(`${API_URL}/articulos/`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    nombre: form.nombre,
-                    stock: Number(form.stock),
-                    precio: Number(form.precio),
-                    marca_id: Number(form.marca_id),
-                    activo: true
-                })
-            })
-            //Recibe la respuesta de la API, si hay error y rehabilita el boton de envio
-            if (res.ok) {
-                const data = await res.json()
-                console.log(data)
-                setSuccessMessage("¡Producto agregado con éxito!")
-                setErrors({})
-                setForm({
-                    nombre: "",
-                    precio: "",
-                    stock: "",
-                    marca_id: "",
-                })
-            }
-        } catch (err) {
-            console.error("Error al cargar los datos a la api: " + err)
-        } finally {
-            setLoading(false)
-        }
-    }
-    //Muestra cuando un product se guardo corretamente
-    return (
-        <section className='flex-1 flex flex-col items-center pt-10 px-4'>
-            <p className='text-2xl font-bold mb-6'>Agregar producto</p>
-
-            {successMessage && (
-                <div className="w-full max-w-md mb-4 p-3 bg-green-900/50 border border-green-500 text-green-300 rounded text-sm text-center">
-                    {successMessage}
-                </div>
+        {/* Precio y Talle */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">
+              Precio ($) *
+            </label>
+            <input
+              type="number"
+              name="precio"
+              value={form.precio}
+              onChange={handleChange}
+              placeholder="Ej: 150000"
+              className="w-full px-3 py-2 rounded-lg bg-gray-50 dark:bg-zinc-800 border border-gray-300 dark:border-zinc-700 text-gray-900 dark:text-white text-sm focus:outline-none focus:border-black dark:focus:border-white"
+            />
+            {errors.precio && (
+              <p className="text-xs text-rose-600 dark:text-rose-400 mt-1">{errors.precio}</p>
             )}
-            {/*Creacion de los campos para ingresar el nombre */}
-            <form onSubmit={handleSubmit} className='w-full max-w-md bg-zinc-800 p-6 rounded '>
-                <div>
-                    <label className='block text-md mb-1 mt-2'>titulo</label>
-                    {errors.nombre && <p className=' text-sm text-red-700 animate-pulse'>{errors.nombre}</p>}
-                    <input
-                        type="text"
-                        name="nombre"
-                        value={form.nombre}
-                        onChange={handleChange}
-                        placeholder='Titulo'
-                        className='w-full px-3 py-2 rounded bg-zinc-900 border border-zinc-700'
-                    />
-                </div>
-                {/*Creacion de los campos para ingresar el precio*/}
-                <div>
-                    <label className='block text-md mb-1 mt-6'>Precio</label>
-                    {errors.precio && <p className=' text-sm text-red-700 animate-pulse'>{errors.precio}</p>}
-                    <input
-                        type="number"
-                        name="precio"
-                        value={form.precio}
-                        onChange={handleChange}
-                        placeholder='$50.000'
-                        className='w-full px-3 py-2 rounded bg-zinc-900 border border-zinc-700'
-                    />
-                </div>
+          </div>
 
-                {/*Menu desplegable para elegir la marca del producto */}
-                <div>
-                    <label className='block text-md mb-1 mt-6'>Marca</label>
-                    {errors.marca_id && <p className=' text-sm text-red-700 animate-pulse'>{errors.marca_id}</p>}
-                    <select
-                        name="marca_id"
-                        value={form.marca_id}
-                        onChange={handleChange}
-                        className='w-full px-3 py-2 rounded bg-zinc-900 border border-zinc-700 text-white'
-                    >
-                        <option value="">Selecciona una marca</option>
-                        {marcas.map((m) => (
-                            <option key={m.id} value={m.id}>
-                                {m.nombre}
-                            </option>
-                        ))}
-                    </select>
-                </div>
-                {/*Campo para ingresar el stock */}
-                <div>
-                    <label className='block text-md mb-1 mt-6'>Stock</label>
-                    {errors.stock && <p className=' text-sm text-red-700 animate-pulse'>{errors.stock}</p>}
-                    <input
-                        type="text"
-                        name="stock"
-                        value={form.stock}
-                        onChange={handleChange}
-                        placeholder='Stock del producto'
-                        className='w-full px-3 py-2 rounded bg-zinc-900 border border-zinc-700'
-                    />
-                </div>
-                {/*Boton para el envio del formulario*/}
-                <button 
-                    type='submit' 
-                    disabled={loading}
-                    className={`w-full my-4 rounded-lg py-4 transition-colors ${
-                        loading ? "bg-blue-400 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-500 cursor-pointer"
-                    }`}
-                >
-                    {loading ? "Guardando..." : "Guardar"}
-                </button>
-            </form>
-        </section>
-    )
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">
+              Talle *
+            </label>
+            <input
+              type="number"
+              step="0.5"
+              name="talle"
+              value={form.talle}
+              onChange={handleChange}
+              placeholder="Ej: 41.5"
+              className="w-full px-3 py-2 rounded-lg bg-gray-50 dark:bg-zinc-800 border border-gray-300 dark:border-zinc-700 text-gray-900 dark:text-white text-sm focus:outline-none focus:border-black dark:focus:border-white"
+            />
+            {errors.talle && (
+              <p className="text-xs text-rose-600 dark:text-rose-400 mt-1">{errors.talle}</p>
+            )}
+          </div>
+        </div>
+
+        {/* Marca y Stock */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">
+              Marca asociada *
+            </label>
+            <select
+              name="marca_id"
+              value={form.marca_id}
+              onChange={handleChange}
+              className="w-full px-3 py-2 rounded-lg bg-gray-50 dark:bg-zinc-800 border border-gray-300 dark:border-zinc-700 text-gray-900 dark:text-white text-sm focus:outline-none focus:border-black dark:focus:border-white"
+            >
+              <option value="">Selecciona una marca</option>
+              {marcas.map((m) => (
+                <option key={m.id} value={m.id}>
+                  {m.nombre}
+                </option>
+              ))}
+            </select>
+            {errors.marca_id && (
+              <p className="text-xs text-rose-600 dark:text-rose-400 mt-1">{errors.marca_id}</p>
+            )}
+          </div>
+
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">
+              Stock disponible *
+            </label>
+            <input
+              type="number"
+              name="stock"
+              value={form.stock}
+              onChange={handleChange}
+              placeholder="Ej: 10"
+              className="w-full px-3 py-2 rounded-lg bg-gray-50 dark:bg-zinc-800 border border-gray-300 dark:border-zinc-700 text-gray-900 dark:text-white text-sm focus:outline-none focus:border-black dark:focus:border-white"
+            />
+            {errors.stock && (
+              <p className="text-xs text-rose-600 dark:text-rose-400 mt-1">{errors.stock}</p>
+            )}
+          </div>
+        </div>
+
+        {/* URL de la Imagen */}
+        <div>
+          <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">
+            URL de la imagen (opcional)
+          </label>
+          <input
+            type="text"
+            name="imagen_url"
+            value={form.imagen_url}
+            onChange={handleChange}
+            placeholder="https://ejemplo.com/zapatilla.jpg"
+            className="w-full px-3 py-2 rounded-lg bg-gray-50 dark:bg-zinc-800 border border-gray-300 dark:border-zinc-700 text-gray-900 dark:text-white text-sm focus:outline-none focus:border-black dark:focus:border-white"
+          />
+        </div>
+
+        {/* Botón de Guardar */}
+        <button
+          type="submit"
+          disabled={loading}
+          className={`w-full py-3 px-4 rounded-lg font-semibold text-sm transition-opacity cursor-pointer ${
+            loading
+              ? "bg-gray-400 text-white cursor-not-allowed"
+              : "bg-black text-white dark:bg-white dark:text-black hover:opacity-85"
+          }`}
+        >
+          {loading ? "Guardando en el servidor..." : "Registrar Producto"}
+        </button>
+      </form>
+    </section>
+  );
 }

@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { FavoritesContext } from "../../context/FavoritesContext";
 import {
   LogoIcon,
   MenuIcon,
@@ -16,6 +17,9 @@ export default function Navbar({ darkMode, setDarkMode }) {
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
+
+  const { favorites } = useContext(FavoritesContext);
+  const favoritesCount = favorites ? favorites.length : 0;
 
   const handleSearchSubmit = (e) => {
     e.preventDefault();
@@ -101,7 +105,7 @@ export default function Navbar({ darkMode, setDarkMode }) {
               <UserIcon className="w-5 h-5" />
             </Link>
 
-            {/* 3. Favoritos / Lista de deseos */}
+            {/* 3. Favoritos / Lista de deseos con badge */}
             <Link
               to="/favoritos"
               className="hover:opacity-60 transition-opacity p-0.5 relative"
@@ -109,6 +113,11 @@ export default function Navbar({ darkMode, setDarkMode }) {
               title="Favoritos"
             >
               <HeartIcon className="w-5 h-5" />
+              {favoritesCount > 0 && (
+                <span className="absolute -top-1.5 -right-2 bg-red-500 text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center leading-none">
+                  {favoritesCount}
+                </span>
+              )}
             </Link>
 
             {/* 4. Bolsa de compra / Pedidos */}
@@ -252,11 +261,16 @@ export default function Navbar({ darkMode, setDarkMode }) {
                 <Link
                   to="/favoritos"
                   onClick={() => setMenuOpen(false)}
-                  className={`py-1 hover:translate-x-1 transition-all ${
+                  className={`py-1 hover:translate-x-1 transition-all flex items-center justify-between ${
                     darkMode ? "text-neutral-200 hover:text-white" : "text-gray-900 hover:text-black"
                   }`}
                 >
-                  Mis Favoritos
+                  <span>Mis Favoritos</span>
+                  {favoritesCount > 0 && (
+                    <span className="bg-red-500 text-white text-xs px-2 py-0.5 rounded-full font-bold">
+                      {favoritesCount}
+                    </span>
+                  )}
                 </Link>
                 <div
                   className={`pt-4 mt-2 border-t ${

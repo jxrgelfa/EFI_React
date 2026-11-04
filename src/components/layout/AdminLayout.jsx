@@ -5,7 +5,6 @@ export default function AdminLayout() {
     { to: "nuevo-producto", label: "➕ Nuevo Producto" },
     { to: "pedidos", label: "📦 Pedidos" },
     { to: "marcas", label: "🏷️ Marcas" },
-    { to: "usuarios", label: "👤 Usuarios" },
   ];
 
   return (
@@ -28,7 +27,7 @@ export default function AdminLayout() {
         </nav>
       </aside>
 
-      {/* Contenido de la subruta activa */}
+      {/* Contenido de la subruta activa mediante Outlet */}
       <div className="flex-1 min-w-0">
         <Outlet />
       </div>
