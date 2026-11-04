@@ -1,4 +1,6 @@
 import { BrowserRouter, Routes, Route, Link, Outlet } from "react-router-dom";
+import Catalog from "./pages/Catalog";
+import ProductDetail from "./pages/ProductoDetail";
 
 // ─── Layout ───────────────────────────────────────────────────────────────────
 
@@ -78,8 +80,6 @@ function RootLayout() {
 // TODO: Reemplazar cada <h1> por el componente real cuando esté listo.
 
 const Home          = () => <h1 className="text-3xl font-bold">🏠 Home — Vista principal (pendiente)</h1>;
-const Catalogo      = () => <h1 className="text-3xl font-bold">👟 Catálogo de Productos (pendiente)</h1>;
-const DetalleProducto = () => <h1 className="text-3xl font-bold">🔍 Detalle del Producto (pendiente)</h1>;
 const Favoritos     = () => <h1 className="text-3xl font-bold">❤️ Favoritos (pendiente)</h1>;
 const NotFound      = () => <h1 className="text-3xl font-bold text-red-500">404 — Página no encontrada</h1>;
 
@@ -136,8 +136,8 @@ export default function App() {
         {/* Rutas públicas bajo RootLayout */}
         <Route element={<RootLayout />}>
           <Route index                   element={<Home />} />
-          <Route path="productos"        element={<Catalogo />} />
-          <Route path="producto/:id"     element={<DetalleProducto />} />
+          <Route path="productos"        element={<Catalog />} />
+          <Route path="producto/:id"     element={<ProductDetail />} />
           <Route path="favoritos"        element={<Favoritos />} />
 
           {/* Rutas de Admin con su propio layout anidado */}
