@@ -1,47 +1,78 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { useDarkMode } from "./hooks/useDarkMode";
+import { FavoritesProvider } from "./context/FavoritesContext";
+import { UserProvider } from "./context/UserContext";
+
+// Layouts
 import RootLayout from "./components/layout/RootLayout";
 import AdminLayout from "./components/layout/AdminLayout";
+
+// Vistas públicas
 import Home from "./pages/Home";
+import Catalog from "./pages/Catalog";
+import ProductDetail from "./pages/ProductoDetail";
+import Favorites from "./components/Favorite";
+
+// Vistas de administración
 import PedidosAdmin from "./pages/PedidosAdmin";
 import MarcasList from "./pages/MarcasList";
+import AgregarProducto from "./pages/AgregarProducto";
 
-// ─── Placeholders temporales en espera de los compañeros ──────────────────────
-// Se reemplazarán directamente por sus componentes cuando realicen la entrega.
-const Catalogo           = () => <h1 className="text-3xl font-bold">👟 Catálogo de Productos (en espera de Santiago)</h1>;
-const DetalleProducto    = () => <h1 className="text-3xl font-bold">🔍 Detalle del Producto (en espera de Santiago)</h1>;
-const Favoritos          = () => <h1 className="text-3xl font-bold">❤️ Favoritos (en espera de Brisa)</h1>;
-const AdminNuevoProducto = () => <h1 className="text-3xl font-bold">➕ Nuevo Producto — Formulario (en espera de Brisa)</h1>;
-const AdminHome          = () => <h1 className="text-3xl font-bold">🛠️ Panel de Administración (pendiente)</h1>;
-const AdminUsuarios      = () => <h1 className="text-3xl font-bold">👤 Gestión de Usuarios (pendiente)</h1>;
-const NotFound           = () => <h1 className="text-3xl font-bold text-red-500">404 — Página no encontrada</h1>;
+// ─── Placeholders para vistas secundarias ──────────────────────────────────────
+const AdminHome = () => (
+  <div className="p-6">
+    <h1 className="text-3xl font-bold">🛠️ Panel de Administración</h1>
+    <p className="mt-2 text-gray-600 dark:text-gray-400">
+      Selecciona una opción del menú lateral para gestionar pedidos, marcas o nuevos productos.
+    </p>
+  </div>
+);
 
+const AdminUsuarios = () => (
+  <div className="p-6">
+    <h1 className="text-3xl font-bold">👤 Gestión de Usuarios</h1>
+    <p className="mt-2 text-gray-600 dark:text-gray-400">Módulo en desarrollo.</p>
+  </div>
+);
+
+const NotFound = () => (
+  <div className="text-center py-20">
+    <h1 className="text-5xl font-extrabold text-red-500 mb-4">404</h1>
+    <p className="text-xl text-gray-700 dark:text-gray-300">Página no encontrada</p>
+  </div>
+);
+
+// ─── Router principal ──────────────────────────────────────────────────────────
 export default function App() {
   const [darkMode, setDarkMode] = useDarkMode();
 
   return (
-    <BrowserRouter>
-      <Routes>
-        {/* Rutas públicas bajo RootLayout */}
-        <Route element={<RootLayout darkMode={darkMode} setDarkMode={setDarkMode} />}>
-          <Route index element={<Home />} />
-          <Route path="productos" element={<Catalogo />} />
-          <Route path="producto/:id" element={<DetalleProducto />} />
-          <Route path="favoritos" element={<Favoritos />} />
+    <UserProvider>
+      <FavoritesProvider>
+        <BrowserRouter>
+          <Routes>
+            {/* Rutas públicas bajo RootLayout */}
+            <Route element={<RootLayout darkMode={darkMode} setDarkMode={setDarkMode} />}>
+              <Route index element={<Home />} />
+              <Route path="productos" element={<Catalog />} />
+              <Route path="producto/:id" element={<ProductDetail />} />
+              <Route path="favoritos" element={<Favorites />} />
 
-          {/* Rutas de Administración bajo AdminLayout */}
-          <Route path="admin" element={<AdminLayout />}>
-            <Route index element={<AdminHome />} />
-            <Route path="nuevo-producto" element={<AdminNuevoProducto />} />
-            <Route path="pedidos" element={<PedidosAdmin />} />
-            <Route path="marcas" element={<MarcasList />} />
-            <Route path="usuarios" element={<AdminUsuarios />} />
-          </Route>
+              {/* Rutas de Administración bajo AdminLayout */}
+              <Route path="admin" element={<AdminLayout />}>
+                <Route index element={<AdminHome />} />
+                <Route path="nuevo-producto" element={<AgregarProducto />} />
+                <Route path="pedidos" element={<PedidosAdmin />} />
+                <Route path="marcas" element={<MarcasList />} />
+                <Route path="usuarios" element={<AdminUsuarios />} />
+              </Route>
 
-          {/* Catch-all 404 */}
-          <Route path="*" element={<NotFound />} />
-        </Route>
-      </Routes>
-    </BrowserRouter>
+              {/* Catch-all 404 */}
+              <Route path="*" element={<NotFound />} />
+            </Route>
+          </Routes>
+        </BrowserRouter>
+      </FavoritesProvider>
+    </UserProvider>
   );
 }

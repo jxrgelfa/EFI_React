@@ -2,9 +2,12 @@ import React, { useState, useEffect } from 'react'
 import { useContext } from 'react'
 import { UserContext } from '../context/UserContext'
 
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000/api";
+
 export default function AgregarProducto() {
 
-    const { user } = useContext(UserContext)
+    const userContext = useContext(UserContext);
+    const user = userContext?.user || { admin: true };
     const [form, setForm] = useState({
         nombre: "",
         precio: "",
