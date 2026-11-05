@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { getMarcas, createProducto } from "../services/api";
 
 export default function AgregarProducto() {
@@ -113,33 +113,33 @@ export default function AgregarProducto() {
   return (
     <section className="max-w-xl mx-auto py-6 px-4">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+        <h1 className="text-2xl font-bold text-gray-900">
           Agregar Nuevo Producto
         </h1>
-        <p className="text-sm text-gray-500 dark:text-gray-400">
+        <p className="text-sm text-gray-500">
           Completa el formulario para registrar una nueva zapatilla en el catálogo.
         </p>
       </div>
 
       {successMessage && (
-        <div className="mb-4 p-3 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-300 dark:border-emerald-800 text-emerald-800 dark:text-emerald-200 rounded-lg text-sm text-center">
+        <div className="mb-4 p-3 bg-emerald-50 border border-emerald-300 text-emerald-800 rounded-lg text-sm text-center">
           {successMessage}
         </div>
       )}
 
       {errors.general && (
-        <div className="mb-4 p-3 bg-rose-50 dark:bg-rose-950/40 border border-rose-300 dark:border-rose-800 text-rose-800 dark:text-rose-200 rounded-lg text-sm text-center">
+        <div className="mb-4 p-3 bg-rose-50 border border-rose-300 text-rose-800 rounded-lg text-sm text-center">
           {errors.general}
         </div>
       )}
 
       <form
         onSubmit={handleSubmit}
-        className="bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 p-6 rounded-xl shadow-xs space-y-4"
+        className="bg-white border border-gray-200 p-6 rounded-xl shadow-xs space-y-4"
       >
         {/* Título / Nombre */}
         <div>
-          <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">
+          <label className="block text-sm font-semibold text-gray-700 mb-1">
             Nombre del modelo *
           </label>
           <input
@@ -148,17 +148,17 @@ export default function AgregarProducto() {
             value={form.nombre}
             onChange={handleChange}
             placeholder="Ej: Nike Air Max 90"
-            className="w-full px-3 py-2 rounded-lg bg-gray-50 dark:bg-zinc-800 border border-gray-300 dark:border-zinc-700 text-gray-900 dark:text-white text-sm focus:outline-none focus:border-black dark:focus:border-white"
+            className="w-full px-3 py-2 rounded-lg bg-gray-50 border border-gray-300 text-gray-900 text-sm focus:outline-none focus:border-black"
           />
           {errors.nombre && (
-            <p className="text-xs text-rose-600 dark:text-rose-400 mt-1">{errors.nombre}</p>
+            <p className="text-xs text-rose-600 mt-1">{errors.nombre}</p>
           )}
         </div>
 
         {/* Precio y Talle */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">
+            <label className="block text-sm font-semibold text-gray-700 mb-1">
               Precio ($) *
             </label>
             <input
@@ -167,15 +167,15 @@ export default function AgregarProducto() {
               value={form.precio}
               onChange={handleChange}
               placeholder="Ej: 150000"
-              className="w-full px-3 py-2 rounded-lg bg-gray-50 dark:bg-zinc-800 border border-gray-300 dark:border-zinc-700 text-gray-900 dark:text-white text-sm focus:outline-none focus:border-black dark:focus:border-white"
+              className="w-full px-3 py-2 rounded-lg bg-gray-50 border border-gray-300 text-gray-900 text-sm focus:outline-none focus:border-black"
             />
             {errors.precio && (
-              <p className="text-xs text-rose-600 dark:text-rose-400 mt-1">{errors.precio}</p>
+              <p className="text-xs text-rose-600 mt-1">{errors.precio}</p>
             )}
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">
+            <label className="block text-sm font-semibold text-gray-700 mb-1">
               Talle *
             </label>
             <input
@@ -185,10 +185,10 @@ export default function AgregarProducto() {
               value={form.talle}
               onChange={handleChange}
               placeholder="Ej: 41.5"
-              className="w-full px-3 py-2 rounded-lg bg-gray-50 dark:bg-zinc-800 border border-gray-300 dark:border-zinc-700 text-gray-900 dark:text-white text-sm focus:outline-none focus:border-black dark:focus:border-white"
+              className="w-full px-3 py-2 rounded-lg bg-gray-50 border border-gray-300 text-gray-900 text-sm focus:outline-none focus:border-black"
             />
             {errors.talle && (
-              <p className="text-xs text-rose-600 dark:text-rose-400 mt-1">{errors.talle}</p>
+              <p className="text-xs text-rose-600 mt-1">{errors.talle}</p>
             )}
           </div>
         </div>
@@ -196,14 +196,14 @@ export default function AgregarProducto() {
         {/* Marca y Stock */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">
+            <label className="block text-sm font-semibold text-gray-700 mb-1">
               Marca asociada *
             </label>
             <select
               name="marca_id"
               value={form.marca_id}
               onChange={handleChange}
-              className="w-full px-3 py-2 rounded-lg bg-gray-50 dark:bg-zinc-800 border border-gray-300 dark:border-zinc-700 text-gray-900 dark:text-white text-sm focus:outline-none focus:border-black dark:focus:border-white"
+              className="w-full px-3 py-2 rounded-lg bg-gray-50 border border-gray-300 text-gray-900 text-sm focus:outline-none focus:border-black"
             >
               <option value="">Selecciona una marca</option>
               {marcas.map((m) => (
@@ -213,12 +213,12 @@ export default function AgregarProducto() {
               ))}
             </select>
             {errors.marca_id && (
-              <p className="text-xs text-rose-600 dark:text-rose-400 mt-1">{errors.marca_id}</p>
+              <p className="text-xs text-rose-600 mt-1">{errors.marca_id}</p>
             )}
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">
+            <label className="block text-sm font-semibold text-gray-700 mb-1">
               Stock disponible *
             </label>
             <input
@@ -227,17 +227,17 @@ export default function AgregarProducto() {
               value={form.stock}
               onChange={handleChange}
               placeholder="Ej: 10"
-              className="w-full px-3 py-2 rounded-lg bg-gray-50 dark:bg-zinc-800 border border-gray-300 dark:border-zinc-700 text-gray-900 dark:text-white text-sm focus:outline-none focus:border-black dark:focus:border-white"
+              className="w-full px-3 py-2 rounded-lg bg-gray-50 border border-gray-300 text-gray-900 text-sm focus:outline-none focus:border-black"
             />
             {errors.stock && (
-              <p className="text-xs text-rose-600 dark:text-rose-400 mt-1">{errors.stock}</p>
+              <p className="text-xs text-rose-600 mt-1">{errors.stock}</p>
             )}
           </div>
         </div>
 
         {/* URL de la Imagen */}
         <div>
-          <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">
+          <label className="block text-sm font-semibold text-gray-700 mb-1">
             URL de la imagen (opcional)
           </label>
           <input
@@ -246,7 +246,7 @@ export default function AgregarProducto() {
             value={form.imagen_url}
             onChange={handleChange}
             placeholder="https://ejemplo.com/zapatilla.jpg"
-            className="w-full px-3 py-2 rounded-lg bg-gray-50 dark:bg-zinc-800 border border-gray-300 dark:border-zinc-700 text-gray-900 dark:text-white text-sm focus:outline-none focus:border-black dark:focus:border-white"
+            className="w-full px-3 py-2 rounded-lg bg-gray-50 border border-gray-300 text-gray-900 text-sm focus:outline-none focus:border-black"
           />
         </div>
 
@@ -257,7 +257,7 @@ export default function AgregarProducto() {
           className={`w-full py-3 px-4 rounded-lg font-semibold text-sm transition-opacity cursor-pointer ${
             loading
               ? "bg-gray-400 text-white cursor-not-allowed"
-              : "bg-black text-white dark:bg-white dark:text-black hover:opacity-85"
+              : "bg-black text-white hover:opacity-85"
           }`}
         >
           {loading ? "Guardando en el servidor..." : "Registrar Producto"}

@@ -51,7 +51,7 @@ export default function ProductDetail() {
                 <h2 className="text-3xl font-extrabold text-red-500 mb-2">
                     Producto no encontrado
                 </h2>
-                <p className="text-zinc-400 mb-6">
+                <p className="text-zinc-600 mb-6">
                     La zapatilla con ID #{id} no existe o fue eliminada de la base de datos.
                 </p>
                 <Link
@@ -71,7 +71,7 @@ export default function ProductDetail() {
                 <h2 className="text-2xl font-bold text-red-500 mb-2">
                     Hubo un problema
                 </h2>
-                <p className="text-zinc-400 mb-6">{error}</p>
+                <p className="text-zinc-600 mb-6">{error}</p>
                 <Link
                     to="/productos"
                     className="inline-block px-5 py-2.5 bg-zinc-800 hover:bg-zinc-700 rounded-lg text-white font-medium transition-colors"
@@ -89,13 +89,13 @@ export default function ProductDetail() {
         <div className="max-w-4xl mx-auto pt-6 px-4 w-full">
             <Link
                 to="/productos"
-                className="inline-flex items-center text-sm text-indigo-400 hover:underline mb-6"
+                className="inline-flex items-center text-sm text-indigo-600 hover:underline mb-6"
             >
                 ← Volver al catálogo
             </Link>
 
-            <article className="flex flex-col md:flex-row gap-8 bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 p-6 sm:p-8 rounded-2xl shadow-lg">
-                <div className="w-full md:w-1/2 aspect-square rounded-xl bg-gray-50 dark:bg-zinc-800/60 overflow-hidden flex items-center justify-center p-6 shrink-0">
+            <article className="flex flex-col md:flex-row gap-8 bg-white border border-gray-200 p-6 sm:p-8 rounded-2xl shadow-lg">
+                <div className="w-full md:w-1/2 aspect-square rounded-xl bg-gray-50 overflow-hidden flex items-center justify-center p-6 shrink-0">
                     {product?.imagen_url ? (
                         <img
                             src={product.imagen_url}
@@ -110,7 +110,7 @@ export default function ProductDetail() {
                 <div className="flex-1 flex flex-col justify-between">
                     <div>
                         <div className="flex items-start justify-between gap-4">
-                            <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900 dark:text-white leading-tight">
+                            <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900 leading-tight">
                                 {product?.nombre}
                             </h1>
 
@@ -120,8 +120,8 @@ export default function ProductDetail() {
                                 onClick={() => toggleFavorite(product)}
                                 className={`p-2 rounded-full border transition-all cursor-pointer ${
                                     liked
-                                        ? "border-red-400 bg-red-50 dark:bg-zinc-800"
-                                        : "border-gray-200 dark:border-zinc-700 hover:bg-gray-50 dark:hover:bg-zinc-800"
+                                        ? "border-red-400 bg-red-50"
+                                        : "border-gray-200 hover:bg-gray-50"
                                 }`}
                                 aria-label={liked ? "Quitar de favoritos" : "Guardar en favoritos"}
                                 title={liked ? "Quitar de favoritos" : "Guardar en favoritos"}
@@ -130,7 +130,7 @@ export default function ProductDetail() {
                                     className={`w-5 h-5 ${
                                         liked
                                             ? "fill-red-500 stroke-red-500"
-                                            : "fill-none stroke-gray-600 dark:stroke-gray-300"
+                                            : "fill-none stroke-gray-600"
                                     }`}
                                     viewBox="0 0 24 24"
                                     strokeWidth="2"
@@ -142,12 +142,12 @@ export default function ProductDetail() {
                             </button>
                         </div>
 
-                        <p className="text-3xl font-black text-emerald-600 dark:text-emerald-400 mt-2 mb-4">
+                        <p className="text-3xl font-black text-emerald-600 mt-2 mb-4">
                             ${Number(product?.precio || 0).toLocaleString("es-AR")}
                         </p>
 
                         {product?.descripcion && (
-                            <p className="text-gray-600 dark:text-zinc-300 text-sm mb-6 leading-relaxed">
+                            <p className="text-gray-600 text-sm mb-6 leading-relaxed">
                                 {product.descripcion}
                             </p>
                         )}
@@ -161,7 +161,7 @@ export default function ProductDetail() {
                                     {(Array.isArray(product.talle) ? product.talle : [product.talle]).map((t) => (
                                         <span
                                             key={t}
-                                            className="px-3 py-1 rounded-md text-xs font-semibold bg-gray-100 dark:bg-zinc-800 text-gray-800 dark:text-zinc-200 border border-gray-200 dark:border-zinc-700"
+                                            className="px-3 py-1 rounded-md text-xs font-semibold bg-gray-100 text-gray-800 border border-gray-200"
                                         >
                                             {t}
                                         </span>
@@ -171,14 +171,14 @@ export default function ProductDetail() {
                         )}
                     </div>
 
-                    <div className="flex flex-col sm:flex-row gap-3 pt-6 border-t border-gray-100 dark:border-zinc-800">
+                    <div className="flex flex-col sm:flex-row gap-3 pt-6 border-t border-gray-100">
                         <button
                             type="button"
                             onClick={() => toggleFavorite(product)}
                             className={`flex-1 py-3 px-6 rounded-xl font-semibold text-sm transition-all flex items-center justify-center gap-2 cursor-pointer ${
                                 liked
-                                    ? "bg-red-50 text-red-600 border border-red-200 dark:bg-red-950/30 dark:border-red-900 dark:text-red-300"
-                                    : "bg-black text-white dark:bg-white dark:text-black hover:opacity-90"
+                                    ? "bg-red-50 text-red-600 border border-red-200"
+                                    : "bg-black text-white hover:opacity-90"
                             }`}
                         >
                             <span>{liked ? "❤️ En tus favoritos" : "🤍 Agregar a favoritos"}</span>

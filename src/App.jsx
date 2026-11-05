@@ -1,4 +1,3 @@
-import { useState, useEffect } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { FavoritesProvider } from "./context/FavoritesContext";
 
@@ -20,10 +19,10 @@ import AgregarProducto from "./pages/AgregarProducto";
 // Vista de inicio del panel de administración
 const AdminHome = () => (
   <div className="p-6">
-    <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+    <h1 className="text-3xl font-bold text-gray-900">
       🛠️ Panel de Administración
     </h1>
-    <p className="mt-2 text-gray-600 dark:text-gray-400">
+    <p className="mt-2 text-gray-600">
       Selecciona una opción del menú lateral para gestionar pedidos, marcas o registrar nuevos productos.
     </p>
   </div>
@@ -33,28 +32,17 @@ const AdminHome = () => (
 const NotFound = () => (
   <div className="text-center py-20">
     <h1 className="text-5xl font-extrabold text-red-500 mb-4">404</h1>
-    <p className="text-xl text-gray-700 dark:text-gray-300">Página no encontrada</p>
+    <p className="text-xl text-gray-700">Página no encontrada</p>
   </div>
 );
 
 export default function App() {
-  // Manejo de tema claro/oscuro con estado estándar
-  const [darkMode, setDarkMode] = useState(false);
-
-  useEffect(() => {
-    if (darkMode) {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
-  }, [darkMode]);
-
   return (
     <FavoritesProvider>
       <BrowserRouter>
         <Routes>
-          {/* Rutas principales envueltas en RootLayout (Navbar + Footer) */}
-          <Route element={<RootLayout darkMode={darkMode} setDarkMode={setDarkMode} />}>
+          {/* Rutas principales envueltas en RootLayout (Navbar) */}
+          <Route element={<RootLayout />}>
             <Route index element={<Home />} />
             <Route path="productos" element={<Catalog />} />
             <Route path="producto/:id" element={<ProductDetail />} />

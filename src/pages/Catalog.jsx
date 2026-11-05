@@ -53,7 +53,7 @@ export default function Catalog() {
   if (loading) {
     return (
       <div className="py-20 text-center">
-        <p className="text-xl font-bold text-gray-500 dark:text-gray-400 animate-pulse">
+        <p className="text-xl font-bold text-gray-500 animate-pulse">
           Cargando catálogo de zapatillas...
         </p>
       </div>
@@ -64,7 +64,7 @@ export default function Catalog() {
     return (
       <div className="p-8 text-center max-w-md mx-auto">
         <h2 className="text-2xl font-bold text-red-500 mb-2">Hubo un problema</h2>
-        <p className="text-gray-500 dark:text-gray-400 mb-4">{error}</p>
+        <p className="text-gray-500 mb-4">{error}</p>
         <button
           type="button"
           onClick={() => {
@@ -81,7 +81,7 @@ export default function Catalog() {
                 setLoading(false);
               });
           }}
-          className="px-4 py-2 bg-black text-white dark:bg-white dark:text-black rounded-lg text-sm font-semibold hover:opacity-85"
+          className="px-4 py-2 bg-black text-white rounded-lg text-sm font-semibold hover:opacity-85"
         >
           Reintentar
         </button>
@@ -100,8 +100,8 @@ export default function Catalog() {
       />
 
       {products.length === 0 ? (
-        <div className="text-center py-16 bg-gray-50 dark:bg-zinc-900 border border-dashed border-gray-200 dark:border-zinc-800 rounded-xl mt-6">
-          <p className="text-gray-500 dark:text-gray-400 text-sm">
+        <div className="text-center py-16 bg-gray-50 border border-dashed border-gray-200 rounded-xl mt-6">
+          <p className="text-gray-500 text-sm">
             No se encontraron productos para los filtros seleccionados.
           </p>
         </div>
@@ -112,7 +112,7 @@ export default function Catalog() {
             return (
               <div
                 key={product.id}
-                className="group relative flex flex-col justify-between p-4 bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 rounded-xl shadow-xs transition-shadow hover:shadow-md"
+                className="group relative flex flex-col justify-between p-4 bg-white border border-gray-200 rounded-xl shadow-xs transition-shadow hover:shadow-md"
               >
                 {/* Botón de favoritos */}
                 <button
@@ -124,8 +124,8 @@ export default function Catalog() {
                   }}
                   className={`absolute top-3 right-3 z-10 w-8 h-8 rounded-full border flex items-center justify-center transition-all cursor-pointer ${
                     liked
-                      ? "border-red-400 bg-red-50 dark:bg-zinc-800"
-                      : "border-gray-200 dark:border-zinc-700 bg-white/80 dark:bg-zinc-800/80 hover:scale-110"
+                      ? "border-red-400 bg-red-50"
+                      : "border-gray-200 bg-white/80 hover:scale-110"
                   }`}
                   aria-label={liked ? "Quitar de favoritos" : "Guardar en favoritos"}
                   title={liked ? "Quitar de favoritos" : "Guardar en favoritos"}
@@ -134,7 +134,7 @@ export default function Catalog() {
                     className={`w-4 h-4 transition-colors ${
                       liked
                         ? "fill-red-500 stroke-red-500"
-                        : "fill-none stroke-gray-600 dark:stroke-gray-300"
+                        : "fill-none stroke-gray-600"
                     }`}
                     viewBox="0 0 24 24"
                     strokeWidth="2"
@@ -147,7 +147,7 @@ export default function Catalog() {
 
                 {/* Contenido clickeable hacia el detalle */}
                 <Link to={`/producto/${product.id}`} className="flex flex-col flex-1">
-                  <div className="aspect-square w-full rounded-lg bg-gray-50 dark:bg-zinc-800/50 flex items-center justify-center p-3 overflow-hidden">
+                  <div className="aspect-square w-full rounded-lg bg-gray-50 flex items-center justify-center p-3 overflow-hidden">
                     {product.imagen_url ? (
                       <img
                         src={product.imagen_url}
@@ -161,10 +161,10 @@ export default function Catalog() {
                   </div>
 
                   <div className="mt-3 flex-1">
-                    <h3 className="text-sm font-semibold text-gray-900 dark:text-white line-clamp-2">
+                    <h3 className="text-sm font-semibold text-gray-900 line-clamp-2">
                       {product.nombre}
                     </h3>
-                    <p className="mt-1 text-base font-extrabold text-emerald-600 dark:text-emerald-400">
+                    <p className="mt-1 text-base font-extrabold text-emerald-600">
                       ${Number(product.precio).toLocaleString("es-AR")}
                     </p>
                   </div>
@@ -173,7 +173,7 @@ export default function Catalog() {
                 {/* Botón Ver Producto */}
                 <Link
                   to={`/producto/${product.id}`}
-                  className="mt-4 w-full text-center py-2 px-3 rounded-lg bg-zinc-900 text-white dark:bg-white dark:text-zinc-900 text-xs font-semibold hover:opacity-85 transition-opacity"
+                  className="mt-4 w-full text-center py-2 px-3 rounded-lg bg-zinc-900 text-white text-xs font-semibold hover:opacity-85 transition-opacity"
                 >
                   Ver detalle
                 </Link>
