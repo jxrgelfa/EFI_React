@@ -2,56 +2,6 @@ import { useState, useEffect, useContext } from "react";
 import { Link } from "react-router-dom";
 import { getProductos } from "../../services/api";
 import { FavoritesContext } from "../../context/FavoritesContext";
-import adidasImg from "../../assets/sneakers/ad-campus-negra.jpg";
-import nbImg from "../../assets/sneakers/new-balance-530-verdes.webp";
-import crocsImg from "../../assets/sneakers/CROCS-SNEAKERS.png";
-import vansImg from "../../assets/sneakers/vans-knu.jpg";
-
-/**
- * Zapatillas de respaldo con fotos locales para garantizar que la interfaz
- * nunca quede vacía si la base de datos aún no tiene ítems cargados.
- */
-const FALLBACK_SNEAKERS = [
-  {
-    id: "f-1",
-    nombre: 'adidas Originals Campus 00s "Core Black"',
-    precio: 179999,
-    imagen_url: adidasImg,
-  },
-  {
-    id: "f-2",
-    nombre: 'New Balance 530 "White / Olive Green"',
-    precio: 195000,
-    imagen_url: nbImg,
-  },
-  {
-    id: "f-3",
-    nombre: 'Crocs Echo Surge "Atmosphere Grey"',
-    precio: 135000,
-    imagen_url: crocsImg,
-  },
-  {
-    id: "f-4",
-    nombre: 'Vans Knu Skool "Black / White"',
-    precio: 149999,
-    imagen_url: vansImg,
-  },
-];
-
-/**
- * Formateador de moneda a Pesos Argentinos (ARS).
- */
-function formatCurrency(value) {
-  if (typeof value === "number") {
-    return `$ ${value.toLocaleString("es-AR")}`;
-  }
-  if (typeof value === "string") {
-    if (value.startsWith("$")) return value;
-    const num = parseFloat(value);
-    return isNaN(num) ? value : `$ ${num.toLocaleString("es-AR")}`;
-  }
-  return "-";
-}
 
 function HeartButton({ isLiked, onToggle }) {
   return (
@@ -85,23 +35,33 @@ function HeartButton({ isLiked, onToggle }) {
 
 export default function SneakerShowcase() {
   const [productos, setProductos] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const { isFavorite, toggleFavorite } = useContext(FavoritesContext);
 
-  useEffect(() => {
+  const fetchProductos = () => {
+    setLoading(true);
+    setError(null);
     getProductos()
       .then((data) => {
         // Maneja tanto un array directo como un objeto paginado { items: [...] }
         const lista = Array.isArray(data) ? data : data?.items || [];
         setProductos(lista);
+        setLoading(false);
       })
       .catch((err) => {
         console.warn("No se pudo conectar a la API de productos:", err.message);
+        setError(err.message || "Error al conectar con el backend de productos");
+        setLoading(false);
       });
+  };
+
+  useEffect(() => {
+    fetchProductos();
   }, []);
 
-  // Si la API trae productos, toma los primeros 4. Si la base de datos está vacía, usa los de respaldo.
-  const sneakersToDisplay =
-    productos.length > 0 ? productos.slice(0, 4) : FALLBACK_SNEAKERS;
+  // Obtenemos los primeros 4 productos directamente del backend
+  const sneakersToDisplay = productos.slice(0, 4);
 
   return (
     <section className="w-full pt-10 pb-16">
@@ -112,8 +72,8 @@ export default function SneakerShowcase() {
             Novedades
           </h2>
           <div className="flex items-center gap-6 mt-1 text-xs sm:text-sm font-medium">
-            <span className="border-b-2 border-black pb-0.5 text-black cursor-pointer">
-              Hombre
+            <span className="border-b-2 border-black pb-0.5 text-black">
+              Destacados
             </span>
             <Link
               to="/productos"
@@ -124,57 +84,100 @@ export default function SneakerShowcase() {
           </div>
         </div>
 
-        {/* Grilla de productos */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
-          {sneakersToDisplay.map((sneaker) => {
-            const isLiked = isFavorite(sneaker.id);
-            const imageSrc = sneaker.imagen_url || sneaker.image || adidasImg;
-            const title = sneaker.nombre || sneaker.name || "Zapatilla";
-            const price = formatCurrency(sneaker.precio ?? sneaker.price);
+        {/* Estado de Carga (Skeletons) */}
+        {loading && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
+            {[1, 2, 3, 4].map((item) => (
+              <div key={item} className="flex flex-col animate-pulse">
+                <div className="aspect-square w-full bg-neutral-100 rounded-lg" />
+                <div className="mt-3 h-4 bg-neutral-100 rounded w-3/4" />
+                <div className="mt-2 h-4 bg-neutral-100 rounded w-1/3" />
+              </div>
+            ))}
+          </div>
+        )}
 
-            return (
-              <div key={sneaker.id} className="group flex flex-col relative">
-                {/* Botón flotante de favoritos */}
-                <div className="absolute top-2 right-2 z-20">
-                  <HeartButton
-                    isLiked={isLiked}
-                    onToggle={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      toggleFavorite(sneaker);
-                    }}
-                  />
-                </div>
+        {/* Estado de Error */}
+        {!loading && error && (
+          <div className="py-12 px-6 text-center bg-neutral-50 border border-dashed border-neutral-200 rounded-xl max-w-lg mx-auto">
+            <p className="text-sm font-medium text-neutral-800 mb-1">
+              No se pudieron cargar los productos desde el backend
+            </p>
+            <p className="text-xs text-neutral-500 mb-4">{error}</p>
+            <button
+              type="button"
+              onClick={fetchProductos}
+              className="px-4 py-2 bg-black text-white text-xs font-semibold rounded-lg hover:opacity-85 transition-opacity cursor-pointer"
+            >
+              Reintentar
+            </button>
+          </div>
+        )}
 
-                <Link
-                  to={sneaker.id?.toString().startsWith("f-") ? "/productos" : `/producto/${sneaker.id}`}
-                  className="flex flex-col flex-1 focus:outline-none"
-                  aria-label={`Ver ${title}`}
-                >
-                  {/* Espacio de la foto */}
-                  <div className="relative aspect-square w-full flex items-center justify-center overflow-hidden">
-                    <img
-                      src={imageSrc}
-                      alt={title}
-                      className="w-full h-full object-contain transition-transform duration-500 ease-out group-hover:scale-105 select-none"
-                      loading="lazy"
+        {/* Estado Sin Productos */}
+        {!loading && !error && sneakersToDisplay.length === 0 && (
+          <div className="py-12 px-6 text-center bg-neutral-50 border border-dashed border-neutral-200 rounded-xl">
+            <p className="text-sm text-neutral-500">
+              No hay productos cargados en el backend actualmente.
+            </p>
+          </div>
+        )}
+
+        {/* Grilla de productos traídos directo del backend */}
+        {!loading && !error && sneakersToDisplay.length > 0 && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
+            {sneakersToDisplay.map((sneaker) => {
+              const isLiked = isFavorite(sneaker.id);
+              const title = sneaker.nombre || "Zapatilla";
+
+              return (
+                <div key={sneaker.id} className="group flex flex-col relative">
+                  {/* Botón flotante de favoritos */}
+                  <div className="absolute top-2 right-2 z-20">
+                    <HeartButton
+                      isLiked={isLiked}
+                      onToggle={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        toggleFavorite(sneaker);
+                      }}
                     />
                   </div>
 
-                  {/* Título y Precio en Pesos Argentinos (ARS) */}
-                  <div className="mt-3 flex flex-col">
-                    <h3 className="text-xs sm:text-sm font-normal text-neutral-900 leading-snug line-clamp-2">
-                      {title}
-                    </h3>
-                    <p className="text-xs sm:text-sm font-semibold text-neutral-900 mt-1 tracking-tight">
-                      {price}
-                    </p>
-                  </div>
-                </Link>
-              </div>
-            );
-          })}
-        </div>
+                  <Link
+                    to={`/producto/${sneaker.id}`}
+                    className="flex flex-col flex-1 focus:outline-none"
+                    aria-label={`Ver ${title}`}
+                  >
+                    {/* Espacio de la foto */}
+                    <div className="relative aspect-square w-full flex items-center justify-center overflow-hidden bg-neutral-50 rounded-lg">
+                      {sneaker.imagen_url ? (
+                        <img
+                          src={sneaker.imagen_url}
+                          alt={title}
+                          className="w-full h-full object-contain p-3 transition-transform duration-500 ease-out group-hover:scale-105 select-none"
+                          loading="lazy"
+                        />
+                      ) : (
+                        <span className="text-xs text-neutral-400">Sin foto</span>
+                      )}
+                    </div>
+
+                    {/* Título y Precio */}
+                    <div className="mt-3 flex flex-col">
+                      <h3 className="text-xs sm:text-sm font-normal text-neutral-900 leading-snug line-clamp-2">
+                        {title}
+                      </h3>
+                      <p className="text-xs sm:text-sm font-semibold text-neutral-900 mt-1 tracking-tight">
+                        ${sneaker.precio}
+                      </p>
+                    </div>
+                  </Link>
+                </div>
+              );
+            })}
+          </div>
+        )}
       </div>
     </section>
   );
