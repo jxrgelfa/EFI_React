@@ -1,4 +1,9 @@
-const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
+// URL base del backend obtenida desde la variable de entorno de Vite (VITE_API_URL).
+// Si no está definida (por ejemplo, en compilaciones de producción sin variable configurada),
+// utiliza la URL del backend en producción en lugar de localhost.
+// Además, eliminamos posibles barras diagonales finales para evitar rutas duplicadas como //productos.
+const RAW_API_URL = import.meta.env.VITE_API_URL || "https://efi-python.fastapicloud.dev";
+const BASE_URL = RAW_API_URL.replace(/\/+$/, "");
 
 // --- PRODUCTOS ---
 
