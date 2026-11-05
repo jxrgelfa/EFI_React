@@ -2,7 +2,7 @@
 // Si no está definida (por ejemplo, en compilaciones de producción sin variable configurada),
 // utiliza la URL del backend en producción en lugar de localhost.
 // Además, eliminamos posibles barras diagonales finales para evitar rutas duplicadas como //productos.
-const RAW_API_URL = import.meta.env.VITE_API_URL || "https://efi-python.fastapicloud.dev";
+const RAW_API_URL = import.meta.env.VITE_API_URL || "https://efi-python-57dacb96.fastapicloud.dev";
 const BASE_URL = RAW_API_URL.replace(/\/+$/, "");
 
 // --- PRODUCTOS ---
@@ -38,8 +38,8 @@ export async function createProducto(data) {
 
   if (!res.ok) {
     const errorBody = await res.json().catch(() => ({}));
-    const detail = typeof errorBody.detail === "string" 
-      ? errorBody.detail 
+    const detail = typeof errorBody.detail === "string"
+      ? errorBody.detail
       : "Error al agregar el producto";
     throw new Error(detail);
   }
