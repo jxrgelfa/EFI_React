@@ -7,15 +7,15 @@ Docente: Valentino Arballo.
 
 ---
 
-## 👥 Integrantes
-* Jorge Gabriel Fernandez Arballo
-* Brisa Alvarez
-* Agustin Sosa
-* Santiago Bianchi Celi
+## Integrantes
+Bianchi, Santiago - s.bianchiceli@itecriocuarto.org.ar
+Fernandez, Jorge - l.fernandez@itecriocuarto.org.ar
+Martoccio, Brisa - b.martoccio@itecriocuarto.org.ar
+Sosa, Agustin - o.sosa@itecriocuarto.org.ar
 
 ---
 
-## 📋 Temática y Arquitectura de la Aplicación
+## Temática y Arquitectura de la Aplicación
 
 La temática elegida es un **e-commerce y catálogo de zapatillas urbanas y deportivas** con panel de administración.
 
@@ -51,11 +51,11 @@ La aplicación consume de forma asíncrona una API externa desarrollada en Pytho
 
 ---
 
-## 🚀 Pasos para Ejecutar la Aplicación Localmente
+## Pasos para Ejecutar la Aplicación Localmente
 
 ### 1. Clonar el repositorio
 ```bash
-git clone https://github.com/jxrgelfa/EFI_React.git
+git clone https://github.com/jxrgelfa/efi_react.git
 cd EFI_React
 ```
 
