@@ -10,8 +10,8 @@ Docente: Valentino Arballo.
 ## 👥 Integrantes
 * Jorge Gabriel Fernandez Arballo
 * Brisa Alvarez
-* [Nombre y Apellido Integrante 3]
-* [Nombre y Apellido Integrante 4]
+* Agustin Sosa
+* Santiago Bianchi Celi
 
 ---
 
@@ -55,7 +55,7 @@ La aplicación consume de forma asíncrona una API externa desarrollada en Pytho
 
 ### 1. Clonar el repositorio
 ```bash
-git clone <URL_DEL_REPOSITORIO>
+git clone https://github.com/jxrgelfa/EFI_React.git
 cd EFI_React
 ```
 
